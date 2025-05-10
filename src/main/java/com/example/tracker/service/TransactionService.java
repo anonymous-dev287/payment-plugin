@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.example.tracker.dto.CategorySpendingDto;
 import com.example.tracker.dto.ExpenseReport;
 import com.example.tracker.dto.TransactionRequest;
+import com.example.tracker.exception.BudgetLimitExceededException;
+import com.example.tracker.exception.BudgetNotFoundException;
 import com.example.tracker.model.Budget;
 import com.example.tracker.model.Category;
 import com.example.tracker.model.Transaction;
@@ -32,7 +34,7 @@ public class TransactionService {
 
     public void handleTransaction(TransactionRequest request) {
         Category category = QRParser.getCategoryFromMerchant(request.getMerchant());
-        Budget budget = budgetRepo.findByUserIdAndCategory(request.getUserId(), category).orElseThrow(() -> new RuntimeException("Budget not found for user and category"));
+        Budget budget = budgetRepo.findByUserIdAndCategory(request.getUserId(), category).orElseThrow(() ->  new BudgetNotFoundException("Budget not found for user and category"));
         double newSpent = budget.getSpentAmount() + request.getAmount();
         budget.setSpentAmount(newSpent);
         budgetRepo.save(budget);
@@ -46,6 +48,9 @@ public class TransactionService {
         double usedPercentage = (newSpent / budget.getLimitAmount()) * 100;
         if (usedPercentage >= 80.0) {
             alertService.sendThresholdAlert(request.getUserId(), category, usedPercentage);
+        }
+        if (usedPercentage > 100.0) {
+            throw new BudgetLimitExceededException("You have exceeded your budget. Please renew.");
         }
     }
     public void createBudget(Budget brequest) {
