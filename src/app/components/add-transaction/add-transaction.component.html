@@ -1,0 +1,28 @@
+
+<h2>Add New Transaction</h2>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Amount</label>
+  <input formControlName="amount" type="number" required>
+
+  <label>Category</label>
+  <select formControlName="category" required>
+    <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+  </select>
+<label>Merchant</label>
+<input formControlName="merchant" required>
+<label>Date</label>
+<input formControlName="transactionDate" type="date" >
+  <label>Type</label>
+  <select formControlName="transactionType">
+    <option value="INCOME">Income</option>
+    <option value="EXPENSE">Expense</option>
+  </select>
+
+  <label>Description</label>
+  <input formControlName="description" placeholder="Optional">
+
+  <button type="submit" [disabled]="form.invalid">Submit</button>
+</form>
+
+<p *ngIf="message" style="color: green">{{ message }}</p>
+

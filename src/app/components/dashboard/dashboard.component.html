@@ -1,0 +1,15 @@
+<h2>Top Spending Categories</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Total Spent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of topCategories">
+      <td>{{ item.category }}</td>
+      <td>₹{{ item.totalAmount }}</td>
+    </tr>
+  </tbody>
+</table>
